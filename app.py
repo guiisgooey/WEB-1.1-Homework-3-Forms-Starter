@@ -78,12 +78,10 @@ animal_to_fact = {
 def animal_facts():
     """Show a form to choose an animal and receive facts."""
 
-    # TODO: Collect the form data and save as variables
-
     animal_keys = animal_to_fact.keys()
     selected_animal = request.args.get('animal')
     animal_fact = None
-    
+
     if selected_animal is not None:
         animal_fact = animal_to_fact[selected_animal]
 
@@ -102,7 +100,7 @@ filter_types_dict = {
     'blur': ImageFilter.BLUR,
     'contour': ImageFilter.CONTOUR,
     'detail': ImageFilter.DETAIL,
-    'edge enhance': ImageFilter.EDGE_ENHANCE,
+    'edge-enhance': ImageFilter.EDGE_ENHANCE,
     'emboss': ImageFilter.EMBOSS,
     'sharpen': ImageFilter.SHARPEN,
     'smooth': ImageFilter.SMOOTH
@@ -138,31 +136,30 @@ def image_filter():
 
     if request.method == 'POST':
         
-        # TODO: Get the user's chosen filter type (whichever one they chose in the form) and save
-        # as a variable
-        filter_type = ''
+        selected_filter = request.form.get('filter')
         
         # Get the image file submitted by the user
         image = request.files.get('users_image')
 
         # TODO: call `save_image()` on the image & the user's chosen filter type, save the returned
         # value as the new file path
+        file_path = save_image(image, selected_filter)
 
         # TODO: Call `apply_filter()` on the file path & filter type
-
+        apply_filter(file_path, selected_filter)
         image_url = f'/static/images/{image.filename}'
-
         context = {
-            # TODO: Add context variables here for:
-            # - The full list of filter types
-            # - The image URL
+
+            'filter_types': filter_types,
+            'image_url': image_url,
+            'selected_filter': selected_filter
         }
 
         return render_template('image_filter.html', **context)
 
     else: # if it's a GET request
         context = {
-            # TODO: Add context variable here for the full list of filter types
+            'filter_types': filter_types
         }
         return render_template('image_filter.html', **context)
 
@@ -181,14 +178,15 @@ def gif_search():
     if request.method == 'POST':
         # TODO: Get the search query & number of GIFs requested by the user, store each as a 
         # variable
+        q = request.form.get('search_query')
+        limit = request.form.get('quantity')
 
         response = requests.get(
             TENOR_URL,
             {
-                # TODO: Add in key-value pairs for:
-                # - 'q': the search query
-                # - 'key': the API key (defined above)
-                # - 'limit': the number of GIFs requested
+                'q': q,
+                'key': API_KEY,
+                'limit': limit
             })
 
         gifs = json.loads(response.content).get('results')

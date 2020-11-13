@@ -141,11 +141,8 @@ def image_filter():
         # Get the image file submitted by the user
         image = request.files.get('users_image')
 
-        # TODO: call `save_image()` on the image & the user's chosen filter type, save the returned
-        # value as the new file path
         file_path = save_image(image, selected_filter)
 
-        # TODO: Call `apply_filter()` on the file path & filter type
         apply_filter(file_path, selected_filter)
         image_url = f'/static/images/{image.filename}'
         context = {
@@ -176,8 +173,7 @@ pp = PrettyPrinter(indent=4)
 def gif_search():
     """Show a form to search for GIFs and show resulting GIFs from Tenor API."""
     if request.method == 'POST':
-        # TODO: Get the search query & number of GIFs requested by the user, store each as a 
-        # variable
+
         q = request.form.get('search_query')
         limit = request.form.get('quantity')
 
